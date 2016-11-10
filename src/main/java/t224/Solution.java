@@ -1,57 +1,76 @@
 package t224;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Stack;
 
 public class Solution {
 
     public int calculate(String s) {
-        return calculateWithBracket(s.replace(" ", ""));
-    }
+        Stack<Expression> expressions = new Stack<Expression>();
+        expressions.push(new Expression(0, 0, true));
 
-    private int calculateWithBracket(String s) {
-        List<Integer> sum = new ArrayList<Integer>();
-        List<Integer> param = new ArrayList<Integer>();
-        List<Boolean> isPlus = new ArrayList<Boolean>();
-        sum.add(0);
-        param.add(0);
-        isPlus.add(true);
-        int layer = 0;
-
-        for (char ch : s.toCharArray()) {
+        for (char ch : s.replace(" ", "").toCharArray()) {
             if (ch == '(') {
-                sum.add(0);
-                param.add(0);
-                isPlus.add(true);
-                layer++;
+                expressions.push(new Expression(0, 0, true));
             } else if (ch == ')') {
-                param.set(layer - 1, calc(sum.get(layer), param.get(layer), isPlus.get(layer)));
-                sum.remove(layer);
-                param.remove(layer);
-                isPlus.remove(layer);
-                layer--;
+                int result = calculateExpression(expressions.pop());
+                expressions.lastElement().setParam(result);
             } else if (ch == '+') {
-                sum.set(layer, calc(sum.get(layer), param.get(layer), isPlus.get(layer)));
-                isPlus.set(layer, true);
-                param.set(layer, 0);
+                expressions.lastElement().setSum(calculateExpression(expressions.peek()));
+                expressions.lastElement().setPlus(true);
+                expressions.lastElement().setParam(0);
             } else if (ch == '-') {
-                sum.set(layer, calc(sum.get(layer), param.get(layer), isPlus.get(layer)));
-                isPlus.set(layer, false);
-                param.set(layer, 0);
+                expressions.lastElement().setSum(calculateExpression(expressions.peek()));
+                expressions.lastElement().setPlus(false);
+                expressions.lastElement().setParam(0);
             } else {
-                if (param.get(layer) == 0) {
-                    param.set(layer, ch - '0');
-                } else {
-                    param.set(layer, param.get(layer) * 10 + ch - '0');
-                }
+                expressions.lastElement().appendParam(ch - '0');
             }
         }
 
-        return calc(sum.get(layer), param.get(layer), isPlus.get(layer));
+        return calculateExpression(expressions.peek());
     }
 
-    private int calc(int sum, int param, boolean isPlus) {
-        return isPlus ? sum + param : sum - param;
+    private int calculateExpression(Expression expression) {
+        return expression.isPlus() ? expression.getSum() + expression.getParam() : expression.getSum() - expression.getParam();
+    }
+
+    private class Expression {
+        private int sum;
+        private int param;
+        private boolean isPlus;
+
+        public Expression(int sum, int param, boolean isPlus) {
+            this.sum = sum;
+            this.param = param;
+            this.isPlus = isPlus;
+        }
+
+        public int getSum() {
+            return sum;
+        }
+
+        public void setSum(int sum) {
+            this.sum = sum;
+        }
+
+        public int getParam() {
+            return param;
+        }
+
+        public void setParam(int param) {
+            this.param = param;
+        }
+
+        public boolean isPlus() {
+            return isPlus;
+        }
+
+        public void setPlus(boolean plus) {
+            isPlus = plus;
+        }
+
+        public void appendParam(int param) {
+            this.param = getParam() == 0 ? param : getParam() * 10 + param;
+        }
     }
 }
-
