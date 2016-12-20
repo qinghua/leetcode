@@ -8,19 +8,17 @@ import java.util.List;
  */
 public class Solution {
     public List<List<Integer>> subsets(int[] nums) {
-        return getSubsets(nums, 0);
+        List<List<Integer>> result = new ArrayList<>();
+        getSubsets(result, new ArrayList<Integer>(), nums, 0);
+        return result;
     }
 
-    private List<List<Integer>> getSubsets(int[] nums, int start) {
-        if (start == nums.length) return new ArrayList<List<Integer>>(){{add(new ArrayList<Integer>());}};
-
-        List<List<Integer>> subsets = getSubsets(nums, start + 1);
-        List<List<Integer>> result = new ArrayList<>(subsets);
-        for (List<Integer> subset : subsets) {
-            ArrayList<Integer> tempList = new ArrayList<>(subset);
-            tempList.add(0, nums[start]);
-            result.add(tempList);
+    private void getSubsets(List<List<Integer>> result, List<Integer> tempList, int[] nums, int start) {
+        result.add(new ArrayList<>(tempList));
+        for (int i = start; i < nums.length; i++) {
+            tempList.add(nums[i]);
+            getSubsets(result, tempList, nums, i + 1);
+            tempList.remove(tempList.size() - 1);
         }
-        return result;
     }
 }
