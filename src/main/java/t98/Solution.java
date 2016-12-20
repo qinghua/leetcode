@@ -25,11 +25,11 @@ public class Solution {
         return isBst;
     }
 
-    public int getMax(TreeNode node) {
+    private int getMax(TreeNode node) {
         return node.right == null ? node.val : getMax(node.right);
     }
 
-    public int getMin(TreeNode node) {
+    private int getMin(TreeNode node) {
         return node.left == null ? node.val : getMin(node.left);
     }
 }
