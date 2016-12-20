@@ -8,40 +8,19 @@ import java.util.List;
  */
 public class Solution {
     public List<List<Integer>> subsets(int[] nums) {
-        List<List<Integer>> result = new ArrayList<>();
-
-        for (int i = 0; i <= nums.length; i++) {
-            result.addAll(addSubsets(i, nums));
-        }
-
-        return result;
+        return getSubsets(nums, 0);
     }
 
-    private List<List<Integer>> addSubsets(int level, final int[] nums) {
-        ArrayList<List<Integer>> result = new ArrayList<>();
+    private List<List<Integer>> getSubsets(int[] nums, int start) {
+        if (start == nums.length) return new ArrayList<List<Integer>>(){{add(new ArrayList<Integer>());}};
 
-        if (level == 0) {
-            result.add(new ArrayList<Integer>());
-            return result;
-        } else if (level == 1) {
-            for (final int num : nums) {
-                result.add(new ArrayList<Integer>(){{add(num);}});
-            }
-            return result;
+        List<List<Integer>> subsets = getSubsets(nums, start + 1);
+        List<List<Integer>> result = new ArrayList<>(subsets);
+        for (List<Integer> subset : subsets) {
+            ArrayList<Integer> tempList = new ArrayList<>(subset);
+            tempList.add(0, nums[start]);
+            result.add(tempList);
         }
-
-        for (int i = 0; i < nums.length; i++) {
-            if (nums.length - 1 - i == 0) break;
-
-            int[] nextNums = new int[nums.length - 1 - i];
-            System.arraycopy(nums, i + 1, nextNums, 0, nextNums.length);
-            List<List<Integer>> subsets = addSubsets(level - 1, nextNums);
-            for (List<Integer> list : subsets) {
-                list.add(0, nums[i]);
-            }
-            result.addAll(subsets);
-        }
-
         return result;
     }
 }
